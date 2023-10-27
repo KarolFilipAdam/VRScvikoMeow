@@ -57,7 +57,7 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-
+volatile int8_t i2cRxData = 0;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -204,10 +204,27 @@ void SysTick_Handler(void)
 void DMA1_Channel6_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
+	if(LL_DMA_IsActiveFlag_TC6(DMA1) == SET)
+	{
+       // uint32_t transferredData = LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_6);
+        //dmaBufferFillLevel += transferredData;
+
+			//THIS TRIGGERS WHEN FULL
+		//USART2_CheckDmaReception();
+		LL_DMA_ClearFlag_TC6(DMA1);
+	}
 
   /* USER CODE END DMA1_Channel6_IRQn 0 */
 
   /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
+	else if(LL_DMA_IsActiveFlag_HT6(DMA1) == SET)
+	{
+		//THIS TRIGGERS WHEN HALF FULL
+
+		//USART2_CheckDmaReception();
+		LL_DMA_ClearFlag_HT6(DMA1);
+	}
+
 
   /* USER CODE END DMA1_Channel6_IRQn 1 */
 }
@@ -218,6 +235,13 @@ void DMA1_Channel6_IRQHandler(void)
 void DMA1_Channel7_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel7_IRQn 0 */
+	if(LL_DMA_IsActiveFlag_TC7(DMA1) == SET)
+	{
+		LL_DMA_ClearFlag_TC7(DMA1);
+
+		while(LL_USART_IsActiveFlag_TC(USART2) == RESET);
+		LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_7);
+	}
 
   /* USER CODE END DMA1_Channel7_IRQn 0 */
 
@@ -232,6 +256,12 @@ void DMA1_Channel7_IRQHandler(void)
 void I2C1_EV_IRQHandler(void)
 {
   /* USER CODE BEGIN I2C1_EV_IRQn 0 */
+	// Check RXNE flag value in ISR register
+	if(LL_I2C_IsActiveFlag_RXNE(I2C1))
+	{
+		// Call function Master Reception Callback
+		i2cRxData = LL_I2C_ReceiveData8(I2C1);
+	}
 
   /* USER CODE END I2C1_EV_IRQn 0 */
 
@@ -246,6 +276,12 @@ void I2C1_EV_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
+	if(LL_USART_IsActiveFlag_IDLE(USART2))
+	{
+		// toto sa spusti akzdy krat co stlacis tlacidlo
+
+		LL_USART_ClearFlag_IDLE(USART2);
+	}
 
   /* USER CODE END USART2_IRQn 0 */
   /* USER CODE BEGIN USART2_IRQn 1 */
@@ -254,5 +290,7 @@ void USART2_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+uint8_t getData(){
+	return i2cRxData;
+}
 /* USER CODE END 1 */

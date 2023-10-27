@@ -18,6 +18,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f3xx_it.h"
+#include "i2cm.h"
+#include <stdio.h>
+#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -51,6 +55,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
+void USART2_PutBuffer(uint8_t *buffer, uint8_t length);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -58,6 +63,9 @@ static void MX_I2C1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint32_t bufferMeow[bufferSize];
+uint32_t bufferMroow[bufferSize];
+uint8_t bufferPaws[bufferSize];
+uint32_t *dontPointAtMeMroow = bufferMroow;
 /* USER CODE END 0 */
 
 /**
@@ -108,7 +116,22 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  uint8_t oneShotReloadReloadEcco2kAndBladeeeOMGGGG = 9;
+
+	 /*
+	  *
+	  *  urob whoamI pre ten dalsi
+	  *  kukni ako hladat data v nich
+	  *  asi to bude podla registor... musis precitat pichoviny
+	  *  a potom súravne registry pingovat to vse...
+	  *
+	  *
+	  */
+	  memset(bufferPaws, 0, bufferSize);
+	  LL_mDelay(100);
+	  uint8_t value = ReadWhoAmI(HTSadd, HTSWhoAdd,HTSwhoVal);
+	  sprintf((char*)bufferPaws, "Kiss yourself meow ! %d \n \r",value);
+	  USART2_PutBuffer(bufferPaws, sizeof(bufferPaws));
+	  LL_mDelay(1000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -203,7 +226,6 @@ static void MX_I2C1_Init(void)
   LL_I2C_Init(I2C1, &I2C_InitStruct);
   LL_I2C_SetOwnAddress2(I2C1, 0, LL_I2C_OWNADDRESS2_NOMASK);
   /* USER CODE BEGIN I2C1_Init 2 */
-
   /* USER CODE END I2C1_Init 2 */
 
 }
@@ -336,6 +358,16 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
+void USART2_PutBuffer(uint8_t *buffer, uint8_t length)
+{
+	LL_DMA_SetMemoryAddress(DMA1, LL_DMA_CHANNEL_7, (uint32_t)buffer);
+	LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_7, length);
+	LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_7);
+	LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_7);
+
+}
 
 /* USER CODE END 4 */
 
