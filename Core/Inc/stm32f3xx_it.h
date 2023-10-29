@@ -60,6 +60,7 @@ void DMA1_Channel7_IRQHandler(void);
 void I2C1_EV_IRQHandler(void);
 void USART2_IRQHandler(void);
 uint8_t getData();
+void clearData();
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

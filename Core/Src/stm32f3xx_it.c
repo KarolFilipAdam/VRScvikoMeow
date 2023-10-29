@@ -57,7 +57,7 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-volatile int8_t i2cRxData = 0;
+volatile int32_t i2cRxData = 0;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -261,7 +261,18 @@ void I2C1_EV_IRQHandler(void)
 	{
 		// Call function Master Reception Callback
 		i2cRxData = LL_I2C_ReceiveData8(I2C1);
+		//LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_NACK);
+	    //LL_I2C_ClearFlag_ADDR(I2C1);
+
 	}
+    if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {
+        // Handle data transmission
+        // Load data into the TXDR register
+    	uint8_t lole = 2;
+    }
+
+
+
 
   /* USER CODE END I2C1_EV_IRQn 0 */
 
@@ -292,5 +303,8 @@ void USART2_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 uint8_t getData(){
 	return i2cRxData;
+}
+void clearData(){
+	i2cRxData = 0;
 }
 /* USER CODE END 1 */

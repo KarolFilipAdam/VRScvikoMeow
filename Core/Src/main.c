@@ -20,6 +20,7 @@
 #include "main.h"
 #include "stm32f3xx_it.h"
 #include "i2cm.h"
+#include "tempSensor.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -107,6 +108,12 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
+  callBackFunction(readRegisterMeow,writeRegisterMroow);
+  htsInit();
+  LL_mDelay(10);
+  //Activate_I2C1_IT();
+
+
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -128,10 +135,10 @@ int main(void)
 	  */
 	  memset(bufferPaws, 0, bufferSize);
 	  LL_mDelay(100);
-	  uint8_t value = ReadWhoAmI(HTSadd, HTSWhoAdd,HTSwhoVal);
-	  sprintf((char*)bufferPaws, "Kiss yourself meow ! %d \n \r",value);
+	  double value = readTemp();
+	  sprintf((char*)bufferPaws, "Kiss yourself meow ! %f \n \r",value);
 	  USART2_PutBuffer(bufferPaws, sizeof(bufferPaws));
-	  LL_mDelay(1000);
+	  LL_mDelay(500);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -195,7 +202,7 @@ static void MX_I2C1_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
   LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -226,6 +233,9 @@ static void MX_I2C1_Init(void)
   LL_I2C_Init(I2C1, &I2C_InitStruct);
   LL_I2C_SetOwnAddress2(I2C1, 0, LL_I2C_OWNADDRESS2_NOMASK);
   /* USER CODE BEGIN I2C1_Init 2 */
+  LL_I2C_SetMode(I2C1, LL_I2C_MODE_I2C);
+  //LL_I2C_Enable(I2C1);
+  LL_I2C_Enable(I2C1);
   /* USER CODE END I2C1_Init 2 */
 
 }

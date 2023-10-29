@@ -87,9 +87,6 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 
 #define 	bufferSize 					128
-#define 	HTSadd						0xBEU
-#define 	HTSwhoVal					0xBCU
-#define 	HTSWhoAdd					0x0FU
 
 
 /* USER CODE END Private defines */
