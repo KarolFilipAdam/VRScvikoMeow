@@ -1,0 +1,23 @@
+/*
+ * theOtherSensor.h
+ *
+ *  Created on: Nov 1, 2023
+ *      Author: Meow
+ */
+
+#ifndef THEOTHERSENSOR_H_
+#define THEOTHERSENSOR_H_
+
+#define LPS25HB_I2C_ADDRESS_0 0xB8
+#define LPS25HB_I2C_ADDRESS_1 0xBA
+
+#define LPS25HB_REG_WHO_AM_I_ADDR 0x0F
+#define LPS25HB_WHO_AM_I_VALUE 0b10111101
+
+#define LPS25HB_REG_CTRL_REG1 0x20
+#define LPS25HB_REG_PRESS_OUT_XL 0x28
+#define LPS25HB_REG_PRESS_OUT_L 0x29
+#define LPS25HB_REG_PRESS_OUT_H 0x2A
+
+
+#endif /* THEOTHERSENSOR_H_ */

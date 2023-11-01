@@ -136,7 +136,9 @@ int main(void)
 	  memset(bufferPaws, 0, bufferSize);
 	  LL_mDelay(100);
 	  double value = readTemp();
-	  sprintf((char*)bufferPaws, "Kiss yourself meow ! %f \n \r",value);
+	  LL_mDelay(1);
+	  double valueH = readHum();
+	  sprintf((char*)bufferPaws, "Kiss yourself meow ! temp: %f, hum: %f \n \r",value, valueH);
 	  USART2_PutBuffer(bufferPaws, sizeof(bufferPaws));
 	  LL_mDelay(500);
     /* USER CODE BEGIN 3 */
