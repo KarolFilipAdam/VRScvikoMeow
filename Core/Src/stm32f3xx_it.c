@@ -265,11 +265,6 @@ void I2C1_EV_IRQHandler(void)
 	    //LL_I2C_ClearFlag_ADDR(I2C1);
 
 	}
-    if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {
-        // Handle data transmission
-        // Load data into the TXDR register
-    	uint8_t lole = 2;
-    }
 
 
 

@@ -11,8 +11,8 @@
 void Activate_I2C1_IT(void);
 void I2C1_SoftwareReset(void);
 uint16_t sendAndRead(uint8_t deAdd, uint8_t whoReg,uint8_t size);
-int32_t writeRegisterMroow(uint8_t slave, uint8_t Reg, uint8_t pBuff, uint16_t nBuffSize);
-int32_t readRegisterMeow(uint8_t slave, uint8_t Reg, uint16_t nBuffSize);
+uint32_t writeRegisterMroow(uint8_t slave, uint8_t Reg, uint8_t pBuff, uint16_t nBuffSize);
+uint32_t readRegisterMeow(uint32_t* buffer, uint8_t slave, uint8_t Reg, uint16_t nBuffSize);
 
 uint16_t sendAndRead(uint8_t deAdd, uint8_t whoReg,uint8_t size)
 {
@@ -112,7 +112,7 @@ void I2C_WriteRegister(uint8_t slave_address, uint8_t register_address, uint8_t 
   * @param  nBuffSize: nBuffSize.
   * @retval None
   */
-int32_t readRegisterMeow(uint8_t slave, uint8_t Reg, uint16_t nBuffSize)
+uint32_t readRegisterMeow(uint32_t* buffer, uint8_t slave, uint8_t Reg, uint16_t nBuffSize)
 {
 
   //I2C1_SoftwareReset();
@@ -120,16 +120,18 @@ int32_t readRegisterMeow(uint8_t slave, uint8_t Reg, uint16_t nBuffSize)
 
 
   uint32_t receive = 0;
+  uint8_t Regval = Reg;
+  for(uint16_t i = 0; i < nBuffSize; i++) {
+  I2C1_SoftwareReset();
 
   /* Initialize the handle transfer */
-  LL_I2C_HandleTransfer(I2C1, slave, LL_I2C_ADDRSLAVE_7BIT, 1,
-  LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
+  LL_I2C_HandleTransfer(I2C1, slave, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
 
   /* Wait for the TX Empty flag */
   while(LL_I2C_IsActiveFlag_TXE(I2C1) == 0);
 
   /* Get the received byte from the RX FIFO */
-  LL_I2C_TransmitData8(I2C1, Reg); // |0x80 auto-increment
+  LL_I2C_TransmitData8(I2C1, Regval); // |0x80 auto-increment
 
   /* Wait for the TX Empty flag */
   while(LL_I2C_IsActiveFlag_TXE(I2C1) == 0);
@@ -143,25 +145,26 @@ int32_t readRegisterMeow(uint8_t slave, uint8_t Reg, uint16_t nBuffSize)
   LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
 
 
-  for(uint16_t i = 0; i < nBuffSize; i++) {
+
     /* Wait for the RX Not Empty flag */
     while(LL_I2C_IsActiveFlag_RXNE(I2C1) == 0);
 
     /* Get the received byte from the RX FIFO */
    // pBuff[i] = LL_I2C_ReceiveData8(I2C1);
-    receive = LL_I2C_ReceiveData8(I2C1);
+    buffer[i] = LL_I2C_ReceiveData8(I2C1);
+    receive++;
     LL_mDelay(10);
+    Regval++;
 
   }
 
   /* Wait for the Transfer Complete flag */
   //    while(LL_I2C_IsActiveFlag_TC(BSP_I2C) == 0);
-
   return receive;
 }
 
 
-int32_t writeRegisterMroow(uint8_t slave, uint8_t Reg, uint8_t pBuff, uint16_t nBuffSize)
+uint32_t writeRegisterMroow(uint8_t slave, uint8_t Reg, uint8_t pBuff, uint16_t nBuffSize)
 {
   I2C1_SoftwareReset();
 

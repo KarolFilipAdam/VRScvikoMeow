@@ -21,8 +21,9 @@
 #include "stm32f3xx_it.h"
 #include "i2cm.h"
 #include "tempSensor.h"
-#include <stdio.h>
 #include <string.h>
+
+#include "../../LPS22HB/sensorPress.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -109,7 +110,10 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   callBackFunction(readRegisterMeow,writeRegisterMroow);
+  callBackFunctionLP(readRegisterMeow,writeRegisterMroow);
   htsInit();
+  LL_mDelay(10);
+  lpInit();
   LL_mDelay(10);
   //Activate_I2C1_IT();
 
@@ -138,8 +142,14 @@ int main(void)
 	  double value = readTemp();
 	  LL_mDelay(1);
 	  double valueH = readHum();
-	  sprintf((char*)bufferPaws, "Kiss yourself meow ! temp: %f, hum: %f \n \r",value, valueH);
+	  LL_mDelay(1);
+	  double valueP = readPress();
+	  LL_mDelay(1);
+	  double valueA = getAlt(valueP);
+	  sprintf((char*)bufferPaws, "temp: %f[C], hum: %f[%%], press %f[hBar], vyska: %f[m] \n \r",value, valueH, valueP,valueA);
 	  USART2_PutBuffer(bufferPaws, sizeof(bufferPaws));
+
+
 	  LL_mDelay(500);
     /* USER CODE BEGIN 3 */
   }
